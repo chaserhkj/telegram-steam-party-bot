@@ -240,6 +240,9 @@ async def party(event):
                         report = await generate_report(party_members)
                         report = [r for r in report if r[2] >= threshold]
                         report = [f'{r[2]}: [{r[1]["name"]}](https://store.steampowered.com/app/{r[0]}/)' for r in report]
+                        if not report:
+                            await reply.reply("No common games found!")
+                            continue
                         for msg in truncate_msg(report):
                             await reply.reply(msg)
 
