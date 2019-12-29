@@ -85,7 +85,7 @@ async def register(event):
     db.sync()
     await event.reply("Your Steam ID has been registered.")
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/unregister')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/unregister$')))
 async def unregister(event):
     if str(event.sender_id) not in db:
         await event.reply("You are not registered yet.")
