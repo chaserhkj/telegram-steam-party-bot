@@ -97,7 +97,7 @@ async def unregister(event):
 @bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
 async def my_games(event):
     if str(event.sender_id) not in db:
-        await event.reply("You have not registered!")
+        await event.reply("You have not registered!\nUse /register to register and /unregister to unregister.")
         return
     steam_id = db[str(event.sender_id)]
     game_results = await get_owned_games(steam_id)
@@ -106,6 +106,9 @@ async def my_games(event):
         return
     game_names = "\n".join(g['name'] for g in game_results.get('games', []))
     game_count = game_results.get('game_count', 0)
+    if game_count == 0:
+        await event.reply("Can't find any of your games.\nThis could be a steam privacy issue.\nSet your steam profile as public so we can see it.")
+        return
     msg = f"List of games owned:(Total: {game_count})\n{game_names}"
     if len(msg) > 4096:
         msg = f"You have too many games, {game_count} in total.\nYou certainly don't have a life."
@@ -181,7 +184,7 @@ async def party(event):
                             await reply.reply("You are already in the party!")
                             continue
                         if str(reply.sender_id) not in db:
-                            await reply.reply("You need to register!")
+                            await reply.reply("You have not registered!\nUse /register to register and /unregister to unregister.")
                             return
                         party_members.add(reply.sender_id)
                         await reply.reply("You are in the party now!")
