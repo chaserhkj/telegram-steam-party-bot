@@ -104,7 +104,8 @@ async def my_games(event):
     if game_results is None:
         await event.reply("Error in accessing steam API")
         return
-    game_names = "\n".join(g['name'] for g in game_results.get('games', []))
+    game_list = [f'[{g["name"]}](https://store.steampowered.com/app/{g["appid"]}/)' for g in game_results.get('games', [])]
+    game_names = "\n".join(game_list)
     game_count = game_results.get('game_count', 0)
     if game_count == 0:
         await event.reply("Can't find any of your games.\nThis could be a steam privacy issue.\nSet your steam profile as public so we can see it.")
@@ -113,7 +114,7 @@ async def my_games(event):
     if len(msg) > 4096:
         msg = f"You have too many games, {game_count} in total.\nYou certainly don't have a life."
         await event.reply(msg)
-        for m in truncate_msg(g['name'] for g in game_results.get('games', [])):
+        for m in truncate_msg(game_list):
             await event.reply(m)
     else:
         await event.reply(msg)
