@@ -94,6 +94,11 @@ async def unregister(event):
     db.sync()
     await event.reply("Your Steam ID has been unregistered.")
 
+@bot.on(events.NewMessage(pattern=re.compile(r'^/flushCache$')))
+async def flush_cache(event):
+    cache.clear()
+    await event.reply("Steam API cache flushed.")
+
 @bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
 async def my_games(event):
     if str(event.sender_id) not in db:
