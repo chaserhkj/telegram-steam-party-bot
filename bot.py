@@ -61,6 +61,7 @@ bot = TelegramClient('steam-party-bot', TG_API_ID, TG_API_HASH).start(bot_token=
 db = shelve.open(DB_FILE)
 steam_api = WebAPI(STEAM_API_KEY)
 cache = db.get("cache", TTLCache(CACHE_SIZE, CACHE_TTL))
+my_name = asyncio.get_event_loop().run_until_complete(bot.get_me()).username
 
 def run_async(func, *args, **kwargs):
     return asyncio.get_running_loop().run_in_executor(None, functools.partial(func, *args, **kwargs))
@@ -70,11 +71,11 @@ async def get_owned_games(steam_id):
     resp = await run_async(steam_api.call, 'IPlayerService.GetOwnedGames', steamid=steam_id, include_appinfo=True, include_played_free_games=True, appids_filter=[])
     return resp.get('response', None)
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/start$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/start(@{my_name})?$')))
 async def start(event):
     await event.respond("Hi there. Steam Party Bot standby.")
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/register')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/register(@{my_name})?')))
 async def register(event):
     args = event.text.split()
     if len(args) < 2:
@@ -85,7 +86,7 @@ async def register(event):
     db.sync()
     await event.reply("Your Steam ID has been registered.")
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/unregister$')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/unregister(@{my_name})?$')))
 async def unregister(event):
     if str(event.sender_id) not in db:
         await event.reply("You are not registered yet.")
@@ -94,7 +95,7 @@ async def unregister(event):
     db.sync()
     await event.reply("Your Steam ID has been unregistered.")
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/flushCache$')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/flushCache(@{my_name})?$')))
 async def flush_cache(event):
     cache.clear()
     await event.reply("Steam API cache flushed.")
@@ -127,11 +128,11 @@ async def my_games_impl(event, full):
     else:
         await event.reply(msg)
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/myGames(@{my_name})?$')))
 async def my_games(event):
     return await my_games_impl(event, False)
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/myGamesFull$')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/myGamesFull(@{my_name})?$')))
 async def my_games_full(event):
     return await my_games_impl(event, True)
 
@@ -178,9 +179,8 @@ def get_display_name(user):
     return display_name
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/party$')))
+@bot.on(events.NewMessage(pattern=re.compile(r'^/party(@{my_name})?$')))
 async def party(event):
-    my_name = (await bot.get_me()).username
     try:
         async with bot.conversation(await event.get_input_chat(), timeout=PARTY_TIMEOUT) as conv:
             party_msg = await conv.send_message("Here comes a new party! Let's find some common games we have.\n\n"
