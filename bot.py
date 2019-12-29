@@ -178,7 +178,7 @@ async def party(event):
             "/add <list of at's> to add people to party\n"
             "/kick <list of at's> to kick people from party\n"
             "/members to show current members\n"
-            "/games <Number of difference tolerance> to find common games\n"
+            "/games [Number of difference tolerance] to find common games\n"
             "/stop to stop party")
             party_members = set()
             try:
