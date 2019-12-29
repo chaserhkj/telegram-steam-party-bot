@@ -113,7 +113,7 @@ async def my_games_impl(event, full):
     game_names = "\n".join(game_list)
     game_count = game_results.get('game_count', 0)
     if game_count == 0:
-        await event.reply("Can't find any of your games.\nThis could be a steam privacy issue.\nSet your steam profile as public so we can see it.")
+        await event.reply("Can't find any of your games.\nThis could be a steam privacy issue.\nSet your steam profile as public so we can see it.\nIf you recently changed your privacy settings, you may need to /flushCache before try again.")
         return
     msg = f"List of games owned:(Total: {game_count})\n{game_names}"
     if len(msg) > 4096:
