@@ -99,7 +99,7 @@ async def register(event):
     await event.reply("Your Steam ID has been registered.")
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/unregister(@{my_name})?$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/unregister(@{my_name})?$')))
 async def unregister(event):
     if str(event.sender_id) not in db:
         await event.reply("You are not registered yet.")
@@ -109,7 +109,7 @@ async def unregister(event):
     await event.reply("Your Steam ID has been unregistered.")
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/flushCache(@{my_name})?$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/flushCache(@{my_name})?$')))
 async def flush_cache(event):
     cache.clear()
     await event.reply("Steam API cache flushed.")
@@ -154,12 +154,12 @@ async def my_games_impl(event, full):
         await event.reply(msg)
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/myGames(@{my_name})?$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/myGames(@{my_name})?$')))
 async def my_games(event):
     return await my_games_impl(event, False)
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/myGamesFull(@{my_name})?$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/myGamesFull(@{my_name})?$')))
 async def my_games_full(event):
     return await my_games_impl(event, True)
 
@@ -212,7 +212,7 @@ def get_display_name(user):
     return display_name
 
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/party(@{my_name})?$')))
+@bot.on(events.NewMessage(pattern=re.compile(rf'^/party(@{my_name})?$')))
 async def party(event):
     try:
         async with bot.conversation(await event.get_input_chat(), timeout=PARTY_TIMEOUT) as conv:
