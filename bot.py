@@ -100,7 +100,7 @@ async def flush_cache(event):
     await event.reply("Steam API cache flushed.")
 
 @bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
-async def my_games(event):
+async def my_games(event, full=False):
     if str(event.sender_id) not in db:
         await event.reply("You have not registered!\nUse /register to register and /unregister to unregister.")
         return
@@ -117,12 +117,20 @@ async def my_games(event):
         return
     msg = f"List of games owned:(Total: {game_count})\n{game_names}"
     if len(msg) > 4096:
-        msg = f"You have too many games, {game_count} in total.\nYou certainly don't have a life."
+        if full:
+            msg = f"You have too many games, {game_count} in total.\nYou certainly don't have a life."
+        else:
+            msg = f"You have too many games, {game_count} in total.\nYou certainly don't have a life.\nDisplaying 10 random games only\nUse /myGamesFull for all"
+            game_list = random.sample(game_list, 10)
         await event.reply(msg)
         for m in truncate_msg(game_list):
             await event.reply(m)
     else:
         await event.reply(msg)
+
+@bot.on(events.NewMessage(pattern=re.compile(r'^/myGamesFull$')))
+async def my_games_full(event):
+    return await my_games(event, True)
 
 async def generate_report(party_members):
     party_members = list(party_members)
