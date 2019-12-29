@@ -99,8 +99,7 @@ async def flush_cache(event):
     cache.clear()
     await event.reply("Steam API cache flushed.")
 
-@bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
-async def my_games(event, full=False):
+async def my_games_impl(event, full):
     if str(event.sender_id) not in db:
         await event.reply("You have not registered!\nUse /register to register and /unregister to unregister.")
         return
@@ -128,9 +127,13 @@ async def my_games(event, full=False):
     else:
         await event.reply(msg)
 
+@bot.on(events.NewMessage(pattern=re.compile(r'^/myGames$')))
+async def my_games(event):
+    return await my_games_impl(event, False)
+
 @bot.on(events.NewMessage(pattern=re.compile(r'^/myGamesFull$')))
 async def my_games_full(event):
-    return await my_games(event, True)
+    return await my_games_impl(event, True)
 
 async def generate_report(party_members):
     party_members = list(party_members)
